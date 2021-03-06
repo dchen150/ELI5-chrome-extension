@@ -17,6 +17,7 @@
   "options_page": "options.html",
   "browser_action": {
     "default_popup": "popup.html",
+    "default_title": "Silly Goose",
     "default_icon": {
       "16": "/images/goose16.png",
       "32": "/images/goose32.png",

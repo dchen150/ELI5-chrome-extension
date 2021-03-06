@@ -10,6 +10,17 @@ body {
   height: max-content;
 }
 
+header > * {
+  float: left;
+  margin-bottom: 0;
+}
+
+header > h1 {
+  margin-left: 18px;
+  margin-top: 10px;
+}
+
+
 /*buttons*/
 .searchButton {
   width: 40px;
