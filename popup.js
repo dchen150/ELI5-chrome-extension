@@ -4,8 +4,9 @@ const GitHubLink = "https://github.com/dchen150/ELI5-chrome-extension";
 const getSelectedText = function () {
     const {baseOffset, focusOffset} = window.getSelection();
     const selected = Math.abs(baseOffset - focusOffset) > 0;
-    const selectedText = selected ? window.getSelection().getRangeAt(0).cloneContents().textContent : null
-    chrome.storage.sync.set({ selectedText }); // storing the selected text globally
+    let selectedText = selected ? window.getSelection().getRangeAt(0).cloneContents().textContent || "" : ""
+    selectedText = selectedText.replace(/[\r\n]+/g, " ");
+    chrome.storage.sync.set({selectedText}); // storing the selected text globally
 };
 
 /* This line converts the above function to string
@@ -20,17 +21,38 @@ window.addEventListener('DOMContentLoaded', function () {
         code: jsCodeWrapper(getSelectedText)
     });
 
-    const header = document.querySelector(".header")
-    header.addEventListener('click', () => chrome.tabs.create({url: GitHubLink}));
+    // Header caption
+    const caption = document.querySelector("#caption")
+    caption.addEventListener('click', () => chrome.tabs.create({url: GitHubLink}));
 
-    const searchTerm = document.querySelector('.searchTerm');
-    chrome.storage.sync.get(['selectedText'], function(result) {
-        searchTerm.value = result.selectedText;
+    // Header settings logo
+    const settings = document.querySelector("#settings")
+    settings.addEventListener('click', () => chrome.tabs.create({'url': 'chrome://extensions/?options=' + chrome.runtime.id}));
+
+    // You search for...
+    // const queryTerm = document.querySelector('#query');
+    chrome.storage.sync.get(['selectedText'], function (result) {
+        if (result.selectedText) {
+            // append query display
+            const resultWrapper = document.querySelector(".resultWrapper");
+            const queryDisplayTemplate = document.querySelector("#queryDisplay");
+            let queryDisplay = queryDisplayTemplate.content.cloneNode(true);
+            queryDisplay.querySelector("#query").innerText = result.selectedText;
+            resultWrapper.appendChild(queryDisplay);
+
+            const resultItemTemplate = document.querySelector("#resultItem");
+            [...Array(3).keys()].forEach(i => {
+                let resultItem = resultItemTemplate.content.cloneNode(true);
+                resultItem.querySelector(".resultContent").innerText = `APPEND RESULT HERE ${i}`;
+                resultWrapper.appendChild(resultItem)
+            });
+
+        }
     });
 
 
-    // Search
-    const searchBtn = document.querySelector('.searchButton')
+    // Search button
+    const searchBtn = document.querySelector('.searchButton');
     searchBtn.addEventListener('click', function () {
         chrome.tabs.executeScript({
             code: `alert("Search btn clicked");`

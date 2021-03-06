@@ -6,16 +6,35 @@
     <link rel="stylesheet" href="styles/popup.css">
 </head>
 <body>
+<template id="queryDisplay">
+    <div class="queryDisplay">
+        You searched for
+        <div id="queryWrapper"><p id="query"></p></div>
+    </div>
+</template>
+<template id="resultItem">
+    <div class="resultItem">
+        <p class="resultContent"></p>
+    </div>
+</template>
+
 <a class="header" href="https://github.com/dchen150/ELI5-chrome-extension">
-    <img id="icon" src="images/goose48.png" alt="Silly Goose Icon">
-    <h1>Silly Goose</h1>
+    <h1 id="caption">Silly Goose <small>for Chrome</small></h1>
+    <h1 id="settings">⚙</h1>
 </a>
-<div class="wrap">
+
+<div class="resultWrapper">
+</div>
+
+<div class="searchWrapper">
+    <img alt="Silly Goose Icon" id="gooseHelper" src="images/goose128.png">
     <label class="search">
-        <input type="text" class="searchTerm" placeholder="What are you looking for?">
-        <button type="submit" class="searchButton">&#x1F50E;</button>
+        <input class="searchTerm" placeholder="What are you looking for?" type="text">
+        <button class="searchButton" type="submit">&#x1F50E;</button>
     </label>
 </div>
 
+
 </body>
+
 </html>
