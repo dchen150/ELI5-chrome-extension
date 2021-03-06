@@ -19,7 +19,7 @@ const findEntitiesHandler = async (request, response) => {
   });
 
   const res = {
-    reddit: searchReddit(max, "relevance", 5),
+    reddit: await searchReddit(max, "relevance", 5),
   };
   // searchStackOverFlow(max);
   response.send(200, res);
@@ -30,20 +30,17 @@ const searchReddit = async (max, sortBy, limit) => {
       .then((res) => res.json())
       .then((data) => {
         // data grooming
-        functions.logger.info("data derek: ", typeof data);
-        functions.logger.info("data derek: ", data.data.children);
-        // for (let i = 0; i < data.children.length; ++i) {
-        //   const currPost = data.children[i].data;
-        //   data.children[i] = {
-        //     title: currPost["title"],
-        //     ups: currPost["ups"],
-        //     downs: currPost["downs"],
-        //     subreddit: currPost["subreddit_name_prefixed"],
-        //     text: currPost["selftext"],
-        //     url: currPost["url"],
-        //   };
-        // }
-        // functions.logger.info("data derek: ", data.children);
+        for (let i = 0; i < data.data.children.length; ++i) {
+          const currPost = data.data.children[i].data;
+          data.data.children[i] = {
+            title: currPost["title"],
+            ups: currPost["ups"],
+            downs: currPost["downs"],
+            subreddit: currPost["subreddit_name_prefixed"],
+            text: currPost["selftext"],
+            url: currPost["url"],
+          };
+        }
         return data.data.children;
       });
 };
