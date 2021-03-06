@@ -1,18 +1,30 @@
 /* The function that finds and returns the selected text */
-var funcToInject = function() {
-  var range = window.getSelection().getRangeAt(0);
-  var selectedText = range.cloneContents().textContent;
-  console.log(selectedText);
-  return selectedText;
+const getSelectedText = function () {
+    const {baseOffset, focusOffset} = window.getSelection();
+    const selected = Math.abs(baseOffset - focusOffset) > 0;
+    const selectedText = selected ? window.getSelection().getRangeAt(0).cloneContents().textContent : ''
+    console.log(selectedText);
+    return selectedText;
 };
 
 /* This line converts the above function to string
  * (and makes sure it will be called instantly) */
-var jsCodeStr = ';(' + funcToInject + ')();';
+const jsCodeWrapper = callbackFunc => ';(' + callbackFunc + ')();';
 
-window.addEventListener('DOMContentLoaded', function() {
 
+// Wrap pop-up related event here!!
+window.addEventListener('DOMContentLoaded', function () {
+    // Select text
     chrome.tabs.executeScript({
-        code: jsCodeStr
+        code: jsCodeWrapper(getSelectedText)
     });
+
+    // Search
+    const searchBtn = document.querySelector('.searchButton')
+    searchBtn.addEventListener('click', function () {
+        chrome.tabs.executeScript({
+            code: `alert("Search btn clicked");`
+        })
+    }, false);
+
 });
