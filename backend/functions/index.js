@@ -14,12 +14,15 @@ const findEntitiesHandler = async (request, response) => {
 
   const entities = result.entities;
 
+  functions.logger.info("entities", entities);
+
   const max = entities.reduce(function(prev, current) {
     return (prev.salience > current.salience) ? prev : current;
   });
 
   const res = {
-    reddit: await searchReddit(max, "relevance", 5),
+    reddit: await searchReddit(max, request.query.sortBy, request.query.limit),
+    stackOverFlow: await searchStack(max),
   };
   // searchStackOverFlow(max);
   response.send(200, res);
@@ -42,6 +45,14 @@ const searchReddit = async (max, sortBy, limit) => {
           };
         }
         return data.data.children;
+      });
+};
+
+const searchStack = async (max) => {
+  return fetch(`https://api.stackexchange.com/2.2/questions?intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
+      .then((res) => res.json())
+      .then((data) => {
+        return data;
       });
 };
 
