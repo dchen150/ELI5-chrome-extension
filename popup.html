@@ -29,10 +29,17 @@
 <div class="searchWrapper">
     <img alt="Silly Goose Icon" id="gooseHelper" src="images/goose128.png">
 
-    <label class="speech-bubble talk-bubble tri-right border round btm-left-in">
-        <input class="searchTerm" placeholder="What are you looking for?" type="text">
-        <button class="searchButton" type="submit">&#x1F50E;</button>
-    </label>
+    <form>
+        <label class="speech-bubble talk-bubble tri-right border round btm-left-in">
+
+            <input disabled id="response" placeholder="What are you looking for?" required type="text"
+                   value="Interesting! Wow">
+            <input class="search-box" id="searchTerm" placeholder="What are you looking for?" required type="text">
+            <button class="close-icon" type="reset"></button>
+            <button class="searchButton" disabled type="submit">&#x1F50E;</button>
+            <!--        <button class="searchButton" type="submit" disabled>&#x1F50E;</button>-->
+        </label>
+    </form>
 </div>
 
 
