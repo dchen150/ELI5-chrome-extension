@@ -1,24 +1,95 @@
-// Initialize butotn with users's prefered color
-let changeColor = document.getElementById("changeColor");
+const GitHubLink = "https://github.com/dchen150/ELI5-chrome-extension";
 
-chrome.storage.sync.get("color", ({ color }) => {
-  changeColor.style.backgroundColor = color;
-});
+/* The function that finds and returns the selected text */
+const getSelectedText = function () {
+    const {baseOffset, focusOffset} = window.getSelection();
+    const selected = Math.abs(baseOffset - focusOffset) > 0;
+    let selectedText = selected ? window.getSelection().getRangeAt(0).cloneContents().textContent || "" : ""
+    selectedText = selectedText.replace(/[\r\n]+/g, " ").trim();
+    chrome.storage.sync.set({selectedText}); // storing the selected text globally
 
-// When the button is clicked, inject setPageBackgroundColor into current page
-changeColor.addEventListener("click", async () => {
-  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+};
 
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: setPageBackgroundColor,
-  });
-});
+/* This line converts the above function to string
+ * (and makes sure it will be called instantly) */
+const jsCodeWrapper = callbackFunc => ';(' + callbackFunc + ')();';
 
-// The body of this function will be execuetd as a content script inside the
-// current page
-function setPageBackgroundColor() {
-  chrome.storage.sync.get("color", ({ color }) => {
-    document.body.style.backgroundColor = color;
-  });
+
+function generateQueryDisplay(selectedText) {
+    const resultWrapper = document.querySelector(".resultWrapper");
+    resultWrapper.innerHTML = '';   // clear
+    const queryDisplayTemplate = document.querySelector("#queryDisplay");
+    let queryDisplay = queryDisplayTemplate.content.cloneNode(true);
+    queryDisplay.querySelector("#query").innerText = selectedText;
+    resultWrapper.appendChild(queryDisplay);
+
+    const resultItemTemplate = document.querySelector("#resultItem");
+    [...Array(3).keys()].forEach(i => {
+        let resultItem = resultItemTemplate.content.cloneNode(true);
+        resultItem.querySelector(".resultContent").innerText = `APPEND RESULT HERE ${i}`;
+        resultWrapper.appendChild(resultItem)
+    });
 }
+
+// Wrap pop-up related event here!!
+window.addEventListener('DOMContentLoaded', function () {
+    const caption = document.querySelector("#caption")
+    const settings = document.querySelector("#settings")
+    const searchTerm = document.querySelector('#searchTerm');
+    const searchBtn = document.querySelector('.searchButton');
+    const response = document.querySelector('#response');
+    const clearBtn = document.querySelector('.close-icon');
+    const resultWrapper = document.querySelector(".resultWrapper");
+
+    // Select text
+    chrome.tabs.executeScript({
+        code: jsCodeWrapper(getSelectedText)
+    });
+
+    // Header caption
+    caption.addEventListener('click', () => chrome.tabs.create({url: GitHubLink}));
+
+    // Header settings logo
+
+    settings.addEventListener('click', () => chrome.tabs.create({'url': 'chrome://extensions/?options=' + chrome.runtime.id}));
+
+    // You search for...
+    chrome.storage.sync.get(['selectedText'], function (result) {
+        if (result.selectedText) {
+            generateQueryDisplay(result.selectedText);
+            response.style.display = 'block';
+            searchTerm.style.display = 'none';
+            searchBtn.style.display = 'none'
+            clearBtn.style.display = 'inline-block';
+        }
+    });
+
+    // Clear button
+    clearBtn.addEventListener('click', () => {
+        resultWrapper.innerHTML = '';   // clear
+        response.style.display = 'none';
+        searchTerm.style.display = 'block';
+        searchBtn.style.display = 'block'
+        clearBtn.style.display = 'none';
+    });
+
+    // Search button
+    searchBtn.addEventListener('click', function () {
+        // generateQueryDisplay(searchTerm.value)
+        // response.style.display = 'block';
+        // searchTerm.style.display = 'none';
+        // searchBtn.style.display = 'none'
+        // searchBtn.disabled = true;
+        // searchTerm.value = null
+    }, false);
+
+    // Search bar
+    searchTerm.addEventListener('input', (event) => {
+        let selectedText = event.target.value.replace(/[\r\n]+/g, " ").trim();
+        chrome.storage.sync.set({selectedText}); // storing the selected text globally
+        searchBtn.disabled = !selectedText
+
+    });
+
+
+});
