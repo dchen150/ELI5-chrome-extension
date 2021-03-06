@@ -1,26 +1,38 @@
 {
-  "name": "Getting Started Example",
-  "description": "Build an Extension!",
-  "version": "1.0",
-  "manifest_version": 3,
+  "name": "Silly Goose",
+  "description": "Quack quack!",
+  "version": "0.0",
   "background": {
-    "service_worker": "background.js"
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
   },
-  "permissions": ["storage", "activeTab", "scripting"],
-  "action": {
+  "permissions": [
+    "<all_urls>",
+    "contextMenus",
+    "storage",
+    "activeTab"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "browser_action": {
     "default_popup": "popup.html",
+    "default_title": "Silly Goose",
     "default_icon": {
-      "16": "/images/get_started16.png",
-      "32": "/images/get_started32.png",
-      "48": "/images/get_started48.png",
-      "128": "/images/get_started128.png"
+      "16": "/images/goose16.png",
+      "32": "/images/goose32.png",
+      "48": "/images/goose48.png",
+      "128": "/images/goose128.png"
     }
   },
   "icons": {
-    "16": "/images/get_started16.png",
-    "32": "/images/get_started32.png",
-    "48": "/images/get_started48.png",
-    "128": "/images/get_started128.png"
+    "16": "/images/goose16.png",
+    "32": "/images/goose32.png",
+    "48": "/images/goose48.png",
+    "128": "/images/goose128.png"
   },
-  "options_page": "options.html"
+  "manifest_version": 2
 }

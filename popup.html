@@ -1,10 +1,48 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="button.css">
-  </head>
-  <body>
-    <button id="changeColor"></button>
-    <script src="popup.js"></script>
-  </body>
+<html lang="en">
+<head>
+    <title>Silly Goose</title>
+    <script type="text/javascript" src="popup.js"></script>
+    <link rel="stylesheet" href="styles/popup.css">
+</head>
+<body>
+<template id="queryDisplay">
+    <div class="queryDisplay">
+        You searched for
+        <div id="queryWrapper"><p id="query"></p></div>
+    </div>
+</template>
+<template id="resultItem">
+    <div class="resultItem">
+        <p class="resultContent"></p>
+    </div>
+</template>
+
+<a class="header" href="https://github.com/dchen150/ELI5-chrome-extension">
+    <h1 id="caption">Silly Goose <small>for Chrome</small></h1>
+    <h1 id="settings">⚙</h1>
+</a>
+
+<div class="resultWrapper">
+</div>
+
+<div class="searchWrapper">
+    <img alt="Silly Goose Icon" id="gooseHelper" src="images/goose128.png">
+
+    <form>
+        <label class="speech-bubble talk-bubble tri-right border round btm-left-in">
+
+            <input disabled id="response" placeholder="What are you looking for?" required type="text"
+                   value="Interesting! Wow">
+            <input class="search-box" id="searchTerm" placeholder="What are you looking for?" required type="text">
+            <button class="close-icon" type="reset"></button>
+            <button class="searchButton" disabled type="submit">&#x1F50E;</button>
+            <!--        <button class="searchButton" type="submit" disabled>&#x1F50E;</button>-->
+        </label>
+    </form>
+</div>
+
+
+</body>
+
 </html>
