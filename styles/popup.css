@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+* {
+  font-family: 'Mali', 'Open Sans', sans-serif;
+}
+
+body {
+  background: #f2f2f2;
+  width: max-content;
+  height: max-content;
+}
+
+/*buttons*/
+.searchButton {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #00B4CC;
+  background: #00B4CC;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+
+/*search bar*/
+.search {
+  width: 100%;
+  position: relative;
+  display: flex;
+}
+
+.searchTerm {
+  width: inherit;
+  min-width: 200px;
+}
+
+.searchTerm:focus {
+  color: #00B4CC;
+}
+
+/*!*Resize the wrap to see the search bar change!*!*/
+/*.wrap {*/
+/*  width: 30%;*/
+/*  position: absolute;*/
+/*  top: 50%;*/
+/*  left: 50%;*/
+/*  transform: translate(-50%, -50%);*/
+/*}*/

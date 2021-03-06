@@ -1,15 +1,34 @@
 {
-  "manifest_version": 2,
-
-  "name":    "Test Extension",
+  "name": "Silly Goose",
+  "description": "Quack quack!",
   "version": "0.0",
-
-  "browser_action": {
-      "default_title": "Test Extension",
-      "default_popup": "popup.html"
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
   },
-
   "permissions": [
-      "<all_urls>"
-  ]
+    "<all_urls>",
+    "contextMenus",
+    "storage",
+    "activeTab"
+  ],
+  "options_page": "options.html",
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/images/goose16.png",
+      "32": "/images/goose32.png",
+      "48": "/images/goose48.png",
+      "128": "/images/goose128.png"
+    }
+  },
+  "icons": {
+    "16": "/images/goose16.png",
+    "32": "/images/goose32.png",
+    "48": "/images/goose48.png",
+    "128": "/images/goose128.png"
+  },
+  "manifest_version": 2
 }
