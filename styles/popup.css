@@ -41,6 +41,11 @@ body {
 #settings {
   margin-left: auto;
   padding: 0 16px;
+  opacity: 0.5;
+}
+
+#settings:hover {
+  opacity: 1;
 }
 
 /*content wrapper*/
