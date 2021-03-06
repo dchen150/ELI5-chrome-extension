@@ -60,6 +60,7 @@ body {
   padding: 0 5px;
   box-shadow: 0 3px 2px rgba(0, 0, 0, 0.25);
   min-width: 250px;
+  min-height: 30px;
 
   /*chat bubble*/
   border: 5px groove #000;
@@ -96,12 +97,10 @@ body {
 }
 
 .search:focus-within {
-  /*border-color: rgb(50, 50, 50);*/
   border-color: black;
-
 }
 
-.searchTerm {
+#searchTerm, #response {
   min-width: 200px;
   font-weight: 700;
   border: none;
@@ -113,7 +112,11 @@ body {
   text-transform: uppercase;
 }
 
-.searchTerm:focus {
+#response {
+  display: none
+}
+
+#searchTerm:focus, #response:focus {
   outline: none;
   /*color: #00B4CC;*/
 }
@@ -138,6 +141,11 @@ body {
   outline: none;
   padding-left: 2px;
   float: right;
+}
+
+.searchButton[disabled] {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /*goose*/
@@ -185,4 +193,42 @@ body {
   font-size: larger;
   overflow-wrap: break-word;
   margin-top: 5px;
+}
+
+.search-wrapper {
+  width: 500px;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.close-icon {
+  border: 1px solid transparent;
+  background-color: transparent;
+  /*display: inline-block;*/
+  vertical-align: middle;
+  outline: 0;
+  cursor: pointer;
+  display:none
+}
+
+.close-icon:after {
+  content: "X";
+  display: block;
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  background-color: #FA9595;
+  z-index: 1;
+  right: 6px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  padding: 2px;
+  border-radius: 50%;
+  text-align: center;
+  color: white;
+  font-weight: normal;
+  font-size: 12px;
+  box-shadow: 0 0 2px #E50F0F;
+  cursor: pointer;
 }
