@@ -22,17 +22,17 @@
     "default_popup": "popup.html",
     "default_title": "Silly Goose",
     "default_icon": {
-      "16": "/images/goose16.png",
-      "32": "/images/goose32.png",
-      "48": "/images/goose48.png",
-      "128": "/images/goose128.png"
+      "16": "/images/mr_goose16.png",
+      "32": "/images/mr_goose32.png",
+      "48": "/images/mr_goose48.png",
+      "128": "/images/mr_goose128.png"
     }
   },
   "icons": {
-    "16": "/images/goose16.png",
-    "32": "/images/goose32.png",
-    "48": "/images/goose48.png",
-    "128": "/images/goose128.png"
+    "16": "/images/mr_goose16.png",
+    "32": "/images/mr_goose32.png",
+    "48": "/images/mr_goose48.png",
+    "128": "/images/mr_goose128.png"
   },
   "manifest_version": 2
 }
