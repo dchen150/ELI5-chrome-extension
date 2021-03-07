@@ -49,10 +49,21 @@ const searchReddit = async (max, sortBy, limit) => {
 };
 
 const searchStack = async (max) => {
-  return fetch(`https://api.stackexchange.com/2.2/questions?intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
+  return fetch(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
       .then((res) => res.json())
       .then((data) => {
-        return data;
+        for (let i = 0; i < data.items.length; ++i) {
+          const currPost = data.items[i];
+            data.items[i] = {
+              title: currPost["title"],
+              score: currPost["score"],
+              answerCount: currPost["answer_count"],
+              text: currPost["body"],
+              url: currPost["link"]
+            }
+    
+        }
+          return data.items.slice(0,5);
       });
 };
 
