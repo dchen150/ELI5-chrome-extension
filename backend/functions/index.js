@@ -20,16 +20,19 @@ const findEntitiesHandler = async (request, response) => {
     return (prev.salience > current.salience) ? prev : current;
   });
 
+  const sortBy = request.query.sortBy;
+  const limit = request.query.limit;
+
   const res = {
-    reddit: await searchReddit(max, request.query.sortBy, request.query.limit),
-    stackOverFlow: await searchStack(max),
+    redditELI5: await searchReddit(max, "ELI5", sortBy, limit),
+    redditExplained: await searchReddit(max, "explained", sortBy, limit),
+    stackOverFlow: await searchStack(max, limit),
   };
-  // searchStackOverFlow(max);
   response.send(200, res);
 };
 
-const searchReddit = async (max, sortBy, limit) => {
-  return fetch(`http://www.reddit.com/search.json?q=${max.name} ELI5&sort=${sortBy}&limit=${limit}`)
+const searchReddit = async (max, type, sortBy, limit) => {
+  return fetch(`http://www.reddit.com/search.json?q=${max.name} ${type}&sort=${sortBy}&limit=${limit}`)
       .then((res) => res.json())
       .then((data) => {
         // data grooming
@@ -40,7 +43,7 @@ const searchReddit = async (max, sortBy, limit) => {
             ups: currPost["ups"],
             downs: currPost["downs"],
             subreddit: currPost["subreddit_name_prefixed"],
-            text: currPost["selftext"],
+            text: currPost["selftext"].replace("\n", ""),
             url: currPost["url"],
           };
         }
@@ -48,7 +51,7 @@ const searchReddit = async (max, sortBy, limit) => {
       });
 };
 
-const searchStack = async (max) => {
+const searchStack = async (max, limit) => {
   return fetch(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
       .then((res) => res.json())
       .then((data) => {
@@ -58,11 +61,13 @@ const searchStack = async (max) => {
             title: currPost["title"],
             score: currPost["score"],
             answerCount: currPost["answer_count"],
-            text: currPost["body"],
+            text: currPost["body"]
+                .replace(/(<([^>]+)>)/gi, "")
+                .replace("\n", ""),
             url: currPost["link"],
           };
         }
-        return data.items.slice(0, 5);
+        return data.items.slice(0, limit);
       });
 };
 
