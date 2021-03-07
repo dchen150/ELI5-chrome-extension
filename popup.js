@@ -213,6 +213,7 @@ window.addEventListener('DOMContentLoaded', function () {
     goose.addEventListener('click', () => {
         console.log(speechBubble.style.visibility)
         const audio = new Audio('goose.mp3');
+        audio.volume = 0.1;
         audio.play();
         if (speechBubble.style.visibility === 'visible') {
             speechBubble.style.visibility = 'hidden';
