@@ -123,7 +123,7 @@ const searchWiki = async (max, limit) => {
                         const {sectionsnippet} = result;
                         // Change <span class=\"searchmatch\">${text}</span> to ${text}
                         const sectionName = sectionsnippet.replaceAll(/<span class="searchmatch">([^\s]+)<\/span>/ig, `$1`);
-                        objBuilder.text = await extractWikiSection(title, sectionName, 3);
+                        objBuilder.text = await extractWikiSection(title, sectionName, 2);
                         objBuilder.type = "section"
                     }
                     // get the Wiki summary instead
@@ -158,7 +158,7 @@ const extractWikiSummary = async (title) => {
         });
 }
 
-const extractWikiSection = async (title, sectionName, maxLength) => {
+const extractWikiSection = async (title, sectionName, maxSentenses) => {
     // redirection allowed - might cause issue?
     return fetch(encodeURI(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext&redirects=1&titles=${title}`)).then((res) => res.json())
         .then((data) => {
@@ -170,7 +170,7 @@ const extractWikiSection = async (title, sectionName, maxLength) => {
             extract = extract.slice(extract.indexOf(sectionNameWikiFormat) + sectionNameWikiFormat.length + 1);
             const sentenceArr = extract.split('. ')
 
-            return sentenceArr.slice(0, maxLength).join('. ') + '.'
+            return sentenceArr.slice(0, maxSentenses).join('. ') + '.'
         });
 }
 
