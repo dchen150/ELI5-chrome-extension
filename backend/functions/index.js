@@ -32,29 +32,29 @@ const findEntitiesHandler = async (request, response) => {
         }));
     };
 
-  const stack = async () => {
-    return Promise.all(redditList.map(async (entity) => {
-      return searchStack(entity, 2);
-    }));
-  };
+    const stack = async () => {
+        return Promise.all(redditList.map(async (entity) => {
+            return searchStack(entity, 2);
+        }));
+    };
 
-  const wiki = async () => {
-    return Promise.all(redditList.map(async (entity) => {
-      return searchWiki(entity, 2);
-    }));
-  };
+    const wiki = async () => {
+        return Promise.all(redditList.map(async (entity) => {
+            return searchWiki(entity, 2);
+        }));
+    };
 
-  const res = {
-    redditELI5: await redditELI5(),
-    redditExplained: await redditExplained(),
-    stackOverFlow: await stack(),
-    wiki: await wiki()
-  };
-  response.send(200, res);
+    const res = {
+        redditELI5: await redditELI5(),
+        redditExplained: await redditExplained(),
+        stackOverFlow: await stack(),
+        wiki: await wiki()
+    };
+    response.send(200, res);
 };
 
 const searchReddit = async (entity, type, sortBy, limit) => {
-    return fetch(`http://www.reddit.com/search.json?q=${entity.name} ${type}&sort=${sortBy}&limit=${limit}`)
+    return fetch(encodeURI(`http://www.reddit.com/search.json?q=${entity.name} ${type}&sort=${sortBy}&limit=${limit}`))
         .then((res) => res.json())
         .then((data) => {
             // data grooming
@@ -73,57 +73,68 @@ const searchReddit = async (entity, type, sortBy, limit) => {
         });
 };
 
- const searchStack = async (max, limit) => {
-   return fetch(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
-       .then((res) => res.json())
-       .then((data) => {
-         for (let i = 0; i < data.items.length; ++i) {
-           const currPost = data.items[i];
-           data.items[i] = {
-             title: currPost["title"],
-             score: currPost["score"],
-             answerCount: currPost["answer_count"],
-             text: currPost["body"]
-                 .replace(/(<([^>]+)>)/gi, "")
-                 .replace("\n", ""),
-             url: currPost["link"],
-           };
-         }
-         return data.items.slice(0, limit);
-       });
-   };
-
-const searchWiki = async (max, limit) => {
-    return fetch(`https://en.wikipedia.org/w/api.php?format=json&action=query&list=search&srsearch=${max.name}&srlimit=${limit}&srenablerewrites&srprop=snippet|sectionsnippet|titlesnippet`)
+const searchStack = async (max, limit) => {
+    return fetch(encodeURI(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`))
         .then((res) => res.json())
         .then((data) => {
-            console.log(data)
-            const searchResult = data.query.search || [];
+            for (let i = 0; i < data.items.length; ++i) {
+                const currPost = data.items[i];
+                data.items[i] = {
+                    title: currPost["title"],
+                    score: currPost["score"],
+                    answerCount: currPost["answer_count"],
+                    text: currPost["body"]
+                        .replace(/(<([^>]+)>)/gi, "")
+                        .replace("\n", ""),
+                    url: currPost["link"],
+                };
+            }
+            return data.items.slice(0, limit);
+        });
+};
+
+const searchWiki = async (max, limit) => {
+    return fetch(encodeURI(`https://en.wikipedia.org/w/api.php?format=json&action=query&list=search&srsearch=${max.name}&srlimit=${limit}&srenablerewrites&srprop=snippet|sectionsnippet|titlesnippet`))
+        .then((res) => res.json())
+        .then((data) => {
+            const searchResult = data.query.search;
 
 
             // Parse result in order: sectionsnippet, titlesnippet, snippet
-            return Promise.all(searchResult.map(result => {
+            return Promise.all(searchResult.map(async result => {
+
                 const {snippet, title} = result;
                 let objBuilder = {
                     title: title,
                     text: snippet,  // original searching snippet
                     // .replace(/(<([^>]+)>)/gi, "")
                     // .replace("\n", ""),
-                    url: `https://en.wikipedia.org/wiki/${title}`
+                    url: `https://en.wikipedia.org/wiki/${title}`,
+                    type: "default"
                 };
+
+                console.log(1, objBuilder)
 
                 // get the Section summary instead
                 if (result.hasOwnProperty("sectionsnippet")) {
+                    console.log(2, objBuilder);
                     const {sectionsnippet} = result;
                     // Change <span class=\"searchmatch\">${text}</span> to ${text}
                     const sectionName = sectionsnippet.replaceAll(/<span class="searchmatch">([^\s]+)<\/span>/ig, `$1`);
-                    objBuilder.text = extractWikiSection(title, sectionName, 3);
+                    objBuilder.text = await extractWikiSection(title, sectionName, 3);
+                    objBuilder.type = "section"
                 }
 
                 // get the Wiki summary instead
                 else if (result.hasOwnProperty("titlesnippet")) {
-                    objBuilder.text = extractWikiSummary(title);
+                    const test = await extractWikiSummary(title);
+                    console.log(3, test);
+                    objBuilder.text = test;
+                    console.log(2, objBuilder);
+                    objBuilder.type = "summary"
                 }
+
+                console.log(objBuilder)
 
                 return objBuilder
             }));
@@ -133,18 +144,24 @@ const searchWiki = async (max, limit) => {
 
 const extractWikiSummary = async (title) => {
     // hard coded to get 3 sentences max; redirection allowed - might got the wrong summary?
-    return fetch(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}&exsentences=3`).then((res) => res.json())
+    title = title.replaceAll(' ', '_');
+    return fetch(encodeURI(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}&exsentences=3`)).then((res) => {
+        return res.json()
+    })
         .then((data) => {
-            const pages = data.query.pages || "CANNOT EXTRACT SUMMARY"
-            const page_id = Object.keys(pages)[0];
+            const pages = data.query.pages;
 
+            if (!pages) return "CANNOT FIND DATA.QUERY.OAGES";
+            if (pages.hasOwnProperty('-1')) return `CANNOT EXTRACT WIKI SUMMARY OF ${title}`
+
+            const page_id = Object.keys(pages)[0];
             return pages[page_id]["extract"]
         });
 }
 
 const extractWikiSection = async (title, sectionName, maxLength) => {
     // redirection allowed - might cause issue?
-    return fetch(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext&redirects=1&titles=${title}`).then((res) => res.json())
+    return fetch(encodeURI(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext&redirects=1&titles=${title}`)).then((res) => res.json())
         .then((data) => {
             const pages = data.query.pages || "CANNOT EXTRACT SUMMARY"
             const page_id = Object.keys(pages)[0];
@@ -166,4 +183,20 @@ const extractWikiSection = async (title, sectionName, maxLength) => {
 //   response.send("Hello from Firebase!");
 // });
 
+const searchWikiHandler = async (request, response) => {
+    response.send(200, await searchWiki({name: request.body.text}, 2));
+}
+
+const extractWikiSummaryHandler = async (request, response) => {
+    response.send(200, await extractWikiSummary(request.body.title));
+}
+
+const extractWikiSectionHandler = async (request, response) => {
+    response.send(200, await extractWikiSection(request.body.title, request.body.sectionName, 2));
+}
+
+
 exports.findEntities = functions.https.onRequest(findEntitiesHandler);
+exports.searchWiki = functions.https.onRequest(searchWikiHandler);
+exports.extractWikiSummary = functions.https.onRequest(extractWikiSummaryHandler);
+exports.extractWikiSection = functions.https.onRequest(extractWikiSectionHandler);
