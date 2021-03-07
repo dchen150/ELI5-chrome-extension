@@ -15,7 +15,7 @@
 </template>
 <template id="resultItem">
     <div class="resultItem">
-        <p class="resultContent"></p>
+        <q class="resultContent"></q>
         <div class="source">Source: <a href="#" target="_blank"></a></div>
     </div>
 </template>
@@ -23,9 +23,7 @@
 <template id="questionAndAnswer">
     <div class="resultItem">
         <div class="question"><strong>Question: </strong></div>
-        <strong>Answer: </strong>
-        <div class="answer">
-        </div>
+        <div class="answer"><strong>Answer: </strong></div>
         <div class="source">Source: <a href="#" target="_blank"></a></div>
     </div>
 </template>
@@ -42,26 +40,24 @@
 <div class="wrapper searchWrapper">
     <img alt="Mr. Goose Icon" id="gooseHelper" src="images/mr_goose.png">
 
-    <form>
-        <label class="speech-bubble talk-bubble tri-right border round btm-left-in">
+    <label class="speech-bubble talk-bubble tri-right border round btm-left-in">
 
-            <input disabled id="response" placeholder="Interesting! Wow" required type="text"
-                   value="Interesting! Wow">
-            <input class="search-box" id="searchTerm" placeholder="I am here to help!" required type="text">
-            <button class="close-icon" type="reset"></button>
-            <button class="searchButton" disabled type="submit">&#x1F50E;</button>
-            <!--        <button class="searchButton" type="submit" disabled>&#x1F50E;</button>-->
-        </label>
-    </form>
+        <input disabled id="response" placeholder="Interesting! Wow" required type="text">
+        <input class="search-box" id="searchTerm" placeholder="I am here to help!" type="text">
+        <button class="close-icon" type="reset"></button>
+        <button class="searchButton" disabled type="submit">&#x1F50E;</button>
+        <!--        <button class="searchButton" type="submit" disabled>&#x1F50E;</button>-->
+    </label>
 </div>
 
 <div class="wrapper authorWrapper"> Made with <span id="heart">♥</span> by
     <a href="https://derekchen.dev/" id="derek" target="_blank">Derek</a>,
     <a href="https://github.com/flora-yc/" id="flora" target="_blank">Flora</a>,
     <a href="https://www.jiajiakong.ca/" id="jiajia" target="_blank">Jiajia</a>,
+    <a href="https://github.com/chenselena" id="selena" target="_blank">Selena</a>,
     <a href="http://trumanhung.tech/" id="truman" target="_blank">Truman</a></div>
 </body>
 
-<div class="loadingContainer"><div class="loading"><img alt="Mr. Goose Icon" class="rainbow_text_animated goose-loading" src="images/mr_fat_goose_static.png">Loading</div></div>
+<div class="loadingContainer"><div class="loading"><img alt="Mr. Goose Icon" class="rainbow_text_animated goose-loading" src="images/mr_fat_goose_static.png">Dummifying</div></div>
 
 </html>

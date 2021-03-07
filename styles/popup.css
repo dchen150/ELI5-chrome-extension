@@ -60,6 +60,7 @@ body {
   position: fixed;
   /*overflow: hidden;*/
   height: 120px;
+  z-index: 3;
 }
 
 /*search bar and search button*/
@@ -208,6 +209,7 @@ body {
   box-shadow: 0 3px 2px rgba(0, 0, 0, 0.25);
   position: relative;
   padding: 10px 10px 20px;
+  z-index: 1;
 }
 
 .resultContent {
@@ -265,7 +267,7 @@ body {
   right: 15px;
   color: #666;
   font-size: 10.5px;
-  z-index: -1;
+  /*z-index: -1;*/
 }
 
 #heart {
@@ -283,7 +285,7 @@ body {
 
 .answer * {
   margin: 0;
-
+  overflow: hidden;
 }
 
 .loadingContainer {

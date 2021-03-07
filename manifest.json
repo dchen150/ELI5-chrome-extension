@@ -1,7 +1,7 @@
 {
   "name": "Mr. Goose",
   "description": "Quack quack!",
-  "version": "0.0",
+  "version": "1.0",
   "background": {
     "scripts": [
       "background.js"
@@ -9,9 +9,6 @@
     "persistent": false
   },
   "permissions": [
-    "<all_urls>",
-    "contextMenus",
-    "storage",
     "activeTab"
   ],
   "options_ui": {

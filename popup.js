@@ -6,16 +6,17 @@ const getSelectedText = function () {
     const selected = Math.abs(baseOffset - focusOffset) > 0;
     let selectedText = selected ? window.getSelection().getRangeAt(0).cloneContents().textContent || "" : ""
     selectedText = selectedText.replace(/[\r\n]+/g, " ").trim();
-    chrome.storage.sync.set({selectedText}); // storing the selected text globally
+    // chrome.storage.sync.set({selectedText}); // storing the selected text globally
 
+    return selectedText
 };
 
 const trimSpaces = extract => extract.replace(/\s\s+/g, ' ').slice(0, -1);
 
 const trimSentences = (extract, maxSentences = 3) => {
-    const preTrim = trimSpaces(extract).match(/[^\.!\?]+[\.!\?]+\s+/g);
+    const preTrim = trimSpaces(extract).match(/[^.!;?]+[.!;?]+\s+/g) || [extract];
     const postTrim = preTrim.slice(0, maxSentences)
-    return trimSpaces(postTrim.join(" ")) + (preTrim.length !== postTrim.length ? "..." : "");
+    return (trimSpaces(postTrim.join(" ")) || postTrim) + (preTrim.length !== postTrim.length ? "..." : "");
 }
 
 /* This line converts the above function to string
@@ -30,12 +31,13 @@ function generateQueryDisplay(selectedText) {
     let queryDisplay = queryDisplayTemplate.content.cloneNode(true);
     queryDisplay.querySelector("#query").innerText = selectedText;
     resultWrapper.appendChild(queryDisplay);
-
     const resultItemTemplate = document.querySelector("#resultItem");
     const questionAndAnswerTemplate = document.querySelector("#questionAndAnswer");
 
     const loading = document.querySelector(".loadingContainer");
     loading.style.display = "block";
+    const response = document.querySelector('#response');
+    response.placeholder = `You search for ${selectedText}`
 
     try {
         fetch("https://us-central1-eli5-chrome-extension.cloudfunctions.net/findEntities", {
@@ -60,6 +62,7 @@ function generateQueryDisplay(selectedText) {
                     resultWrapper.appendChild(resultItem)
                 }
 
+                wiki && wiki[0] && wiki[0][0] && add(wiki[0][0].text, wiki[0][0].url);
 
                 if (redditExplained && redditExplained[0] && redditExplained[0][0]) {
                     console.log("Found redditExplained result", redditExplained[0][0]);
@@ -150,14 +153,21 @@ function generateQueryDisplay(selectedText) {
 
                 }
 
-                wiki && wiki[0] && wiki[0][0] && add(wiki[0][0].text, wiki[0][0].url);
-
                 loading.style.display = "none";
+
+                const goose = document.querySelector("#gooseHelper");
+                const speechBubble = document.querySelector(".speech-bubble");
+                if (resultWrapper.hasChildNodes()) minimizeGoose(speechBubble, goose)
+
             });
     } catch (err) {
-        console.error(err)
+        console.log(err)
 
         loading.style.display = "none";
+
+        const goose = document.querySelector("#gooseHelper");
+        const speechBubble = document.querySelector(".speech-bubble");
+        if (resultWrapper.hasChildNodes()) minimizeGoose(speechBubble, goose)
 
     }
 }
@@ -184,68 +194,84 @@ window.addEventListener('DOMContentLoaded', function () {
     const goose = document.querySelector("#gooseHelper");
     const speechBubble = document.querySelector(".speech-bubble");
 
-    // Select text
-    chrome.tabs.executeScript({
+    chrome.tabs.executeScript( {
         code: jsCodeWrapper(getSelectedText)
-    });
+    }, function(selectedText1) {
+        let selectedText = selectedText1?.[0] || ''
+        selectedText = trimSpaces(selectedText);
+        // Create links
+        caption.addEventListener('click', () => chrome.tabs.create({url: GitHubLink}));
+        settings.addEventListener('click', () => chrome.tabs.create({'url': 'chrome://extensions/?options=' + chrome.runtime.id}));
 
-    // Create links
-    caption.addEventListener('click', () => chrome.tabs.create({url: GitHubLink}));
-    settings.addEventListener('click', () => chrome.tabs.create({'url': 'chrome://extensions/?options=' + chrome.runtime.id}));
+        // You search for...
+        if (selectedText && selectedText.length > 0) {
+            generateQueryDisplay(selectedText);
+            response.style.display = 'block';
+            searchTerm.style.display = 'none';
+            searchBtn.style.display = 'none';
+            clearBtn.style.display = 'inline-block';
+        } else {
+            searchTerm.focus()
+        }
 
-    // You search for...
-    chrome.storage.sync.get(['selectedText'], function (result) {
-        if (result.selectedText) {
-            generateQueryDisplay(result.selectedText);
+        // Clear button
+        clearBtn.addEventListener('click', () => {
+            resultWrapper.innerHTML = '';   // clear
+            searchTerm.value = null;
+            response.style.display = 'none';
+            searchTerm.style.display = 'block';
+            searchBtn.style.display = 'block'
+            clearBtn.style.display = 'none';
+            searchTerm.focus()
+        });
+
+        // Search bar
+        searchTerm.addEventListener('input', (event) => {
+            let selectedText = event.target.value.replace(/[\r\n]+/g, " ").trim();
+            // chrome.storage.sync.set({selectedText}); // storing the selected text globally
+            searchBtn.disabled = !selectedText
+
+        });
+
+        searchBtn.addEventListener('click', () => {
+            generateQueryDisplay(searchTerm.value);
             response.style.display = 'block';
             searchTerm.style.display = 'none';
             searchBtn.style.display = 'none'
             clearBtn.style.display = 'inline-block';
-        }
+        }, false);
+
+        searchTerm.addEventListener('keydown', event => {
+            if (event.isComposing || event.keyCode === 13) {
+                generateQueryDisplay(searchTerm.value);
+                response.style.display = 'block';
+                searchTerm.style.display = 'none';
+                searchBtn.style.display = 'none'
+                clearBtn.style.display = 'inline-block';
+            }
+
+        }, false);
+
+
+        goose.addEventListener('click', () => {
+            const audio = new Audio('goose.mp3');
+            audio.volume = 0.1;
+            audio.play();
+            if (speechBubble.style.visibility === 'visible') {
+                minimizeGoose(speechBubble, goose);
+            } else {
+                speechBubble.style.visibility = 'visible';
+                speechBubble.style.opacity = '1';
+
+                goose.style.transform = 'rotate(-13deg)';
+                goose.style.height = '160px';
+                goose.style.bottom = '-13px';
+            }
+        });
     });
 
-    // Clear button
-    clearBtn.addEventListener('click', () => {
-        resultWrapper.innerHTML = '';   // clear
-        response.style.display = 'none';
-        searchTerm.style.display = 'block';
-        searchBtn.style.display = 'block'
-        clearBtn.style.display = 'none';
-    });
 
-    // Search button
-    searchBtn.addEventListener('click', function () {
-        // generateQueryDisplay(searchTerm.value)
-        // response.style.display = 'block';
-        // searchTerm.style.display = 'none';
-        // searchBtn.style.display = 'none'
-        // searchBtn.disabled = true;
-        // searchTerm.value = null
-    }, false);
 
-    // Search bar
-    searchTerm.addEventListener('input', (event) => {
-        let selectedText = event.target.value.replace(/[\r\n]+/g, " ").trim();
-        chrome.storage.sync.set({selectedText}); // storing the selected text globally
-        searchBtn.disabled = !selectedText
-
-    });
-
-    goose.addEventListener('click', () => {
-        const audio = new Audio('goose.mp3');
-        audio.volume = 0.1;
-        audio.play();
-        if (speechBubble.style.visibility === 'visible') {
-            minimizeGoose(speechBubble, goose);
-        } else {
-            speechBubble.style.visibility = 'visible';
-            speechBubble.style.opacity = '1';
-
-            goose.style.transform = 'rotate(-13deg)';
-            goose.style.height = '160px';
-            goose.style.bottom = '-13px';
-        }
-    });
 
 
 });
