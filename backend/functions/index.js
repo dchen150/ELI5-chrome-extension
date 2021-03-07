@@ -98,7 +98,7 @@ const searchStack = async (max, limit) => {
 };
 
 const searchWiki = async (max, limit) => {
-    return fetch(encodeURI(`https://en.wikipedia.org/w/api.php?format=json&action=query&list=search&srsearch=${max.name}&srlimit=${limit}&srenablerewrites&srprop=snippet|sectionsnippet|titlesnippet`))
+    const result = await fetch(encodeURI(`https://en.wikipedia.org/w/api.php?format=json&action=query&list=search&srsearch=${max.name}&srlimit=${limit}&srenablerewrites&srprop=snippet|sectionsnippet|titlesnippet`))
         .then((res) => res.json())
         .then((data) => {
             const searchResult = data.query.search;
@@ -107,37 +107,38 @@ const searchWiki = async (max, limit) => {
             // Parse result in order: sectionsnippet, titlesnippet, snippet
             return Promise.all(searchResult.map(async result => {
 
-                const {snippet, title} = result;
-                let objBuilder = {
-                    title: title,
-                    text: snippet,  // original searching snippet
-                    // .replace(/(<([^>]+)>)/gi, "")
-                    // .replace("\n", ""),
-                    url: `https://en.wikipedia.org/wiki/${title}`,
-                    type: "default"
-                };
+                    const {snippet, title} = result;
+                    let objBuilder = {
+                        title: title,
+                        text: snippet,  // original searching snippet
+                        // .replace(/(<([^>]+)>)/gi, "")
+                        // .replace("\n", ""),
+                        url: `https://en.wikipedia.org/wiki/${title}`,
+                        type: "default"
+                    };
 
-                // get the Section summary instead
-                if (result.hasOwnProperty("sectionsnippet")) {
-                    console.log(2, objBuilder);
-                    const {sectionsnippet} = result;
-                    // Change <span class=\"searchmatch\">${text}</span> to ${text}
-                    const sectionName = sectionsnippet.replaceAll(/<span class="searchmatch">([^\s]+)<\/span>/ig, `$1`);
-                    objBuilder.text = await extractWikiSection(title, sectionName, 3);
-                    objBuilder.type = "section"
-                }
-                // get the Wiki summary instead
-                else if (result.hasOwnProperty("titlesnippet")) {
-                    objBuilder.text = await extractWikiSummary(title);
-                    objBuilder.type = "summary"
-                }
+                    // get the Section summary instead
+                    if (result.hasOwnProperty("sectionsnippet")) {
+                        console.log(2, objBuilder);
+                        const {sectionsnippet} = result;
+                        // Change <span class=\"searchmatch\">${text}</span> to ${text}
+                        const sectionName = sectionsnippet.replaceAll(/<span class="searchmatch">([^\s]+)<\/span>/ig, `$1`);
+                        objBuilder.text = await extractWikiSection(title, sectionName, 3);
+                        objBuilder.type = "section"
+                    }
+                    // get the Wiki summary instead
+                    else if (result.hasOwnProperty("titlesnippet")) {
+                        objBuilder.text = await extractWikiSummary(title);
+                        objBuilder.type = "summary"
+                    }
                     return objBuilder
-                }).filter(async result => {
-                    return result.text && result.text.length > 50
                 })
             );
 
         });
+
+    return result.filter(result => result.text && result.text.length > 50 && !result.text.includes("may refer to"));
+
 };
 
 const extractWikiSummary = async (title) => {
@@ -182,7 +183,7 @@ const extractWikiSection = async (title, sectionName, maxLength) => {
 // });
 
 const searchWikiHandler = async (request, response) => {
-    response.send(200, await searchStack({name: request.body.text}, 3));
+    response.send(200, await searchWiki({name: request.body.text}, 3));
 }
 
 const extractWikiSummaryHandler = async (request, response) => {
