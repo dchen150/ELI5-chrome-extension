@@ -1,4 +1,4 @@
-# Silly Goose~
+# Mr. Goose~
 
 ### Dev setup
 - Make sure using the [V2](https://developer.chrome.com/docs/extensions/mv2) documentation instead of V3 documentation

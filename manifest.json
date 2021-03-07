@@ -1,5 +1,5 @@
 {
-  "name": "Silly Goose",
+  "name": "Mr. Goose",
   "description": "Quack quack!",
   "version": "0.0",
   "background": {
@@ -20,7 +20,7 @@
   },
   "browser_action": {
     "default_popup": "popup.html",
-    "default_title": "Silly Goose",
+    "default_title": "Mr. Goose",
     "default_icon": {
       "16": "/images/mr_fat_goose16.png",
       "32": "/images/mr_fat_goose32.png",
