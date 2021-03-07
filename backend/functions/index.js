@@ -58,7 +58,7 @@ const searchStack = async (max) => {
               title: currPost["title"],
               score: currPost["score"],
               answerCount: currPost["answer_count"],
-              text: currPost["body"],
+              text: currPost["body"].replace(/(<([^>]+)>)/gi, ""),
               url: currPost["link"]
             }
     
