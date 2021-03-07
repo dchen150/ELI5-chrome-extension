@@ -50,8 +50,8 @@ function generateQueryDisplay(selectedText) {
                 resultWrapper.appendChild(resultItem)
             }
 
-            redditELI5[0][0] && add(redditELI5[0][0].title + "#" + redditELI5[0][0].subreddit, redditELI5[0][0].url);
-            redditExplained[0][0] && add(redditExplained[0][0].title + "#" + redditELI5[0][0].subreddit, redditExplained[0][0].url);
+            redditELI5[0][0] && add(redditELI5[0][0].title + " #" + redditELI5[0][0].subreddit, redditELI5[0][0].url);
+            redditExplained[0][0] && add(redditExplained[0][0].title + " #" + redditExplained[0][0].subreddit, redditExplained[0][0].url);
             wiki[0][0] && add(wiki[0][0].text, wiki.url);
         })
 }
