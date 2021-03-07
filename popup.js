@@ -43,7 +43,6 @@ function generateQueryDisplay(selectedText) {
             .then((data) => {
                 console.log(data)
                 const {redditELI5, redditExplained, stackOverFlow, wiki} = data;
-                console.log(redditELI5[0].title)
 
                 function add(result, source) {
                     let resultItem = resultItemTemplate.content.cloneNode(true);
@@ -88,6 +87,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const flora = document.querySelector("#flora");
     const jiajia = document.querySelector("#jiajia");
     const truman = document.querySelector("#truman");
+    const goose = document.querySelector("#gooseHelper");
+    const speechBubble = document.querySelector(".speech-bubble");
 
     // Select text
     chrome.tabs.executeScript({
@@ -138,6 +139,28 @@ window.addEventListener('DOMContentLoaded', function () {
         chrome.storage.sync.set({selectedText}); // storing the selected text globally
         searchBtn.disabled = !selectedText
 
+    });
+
+    goose.addEventListener('click', () => {
+        console.log(speechBubble.style.visibility)
+        const audio = new Audio('goose.mp3');
+        audio.play();
+        if (speechBubble.style.visibility === 'visible') {
+            speechBubble.style.visibility = 'hidden';
+            speechBubble.style.opacity = '0';
+
+
+            goose.style.transform = 'None';
+            goose.style.height = '80px';
+            goose.style.bottom = '-8px';
+        } else {
+            speechBubble.style.visibility = 'visible';
+            speechBubble.style.opacity = '1';
+
+            goose.style.transform = 'rotate(-13deg)';
+            goose.style.height = '160px';
+            goose.style.bottom = '-13px';
+        }
     });
 
 
