@@ -61,7 +61,7 @@ function generateQueryDisplay(selectedText) {
                             if (!comment) return
                             console.log("Found redditExplained answer", comment)
 
-                            const {author_fullname, body, body_html, permalink} = comment;
+                            const {author, body, body_html, permalink} = comment;
 
                             let resultItem = questionAndAnswerTemplate.content.cloneNode(true);
                             const newContent = document.createTextNode(title);
@@ -74,7 +74,7 @@ function generateQueryDisplay(selectedText) {
 
 
                             resultItem.querySelector(".answer").innerHTML = decoded_html;
-                            const source = document.createTextNode(`${author_fullname} on redditExplained`);
+                            const source = document.createTextNode(`${author} on redditExplained`);
                             resultItem.querySelector(".source a").href = "https://www.reddit.com/" + permalink;
                             resultItem.querySelector(".source a").appendChild(source)
                             resultWrapper.appendChild(resultItem);
@@ -93,7 +93,7 @@ function generateQueryDisplay(selectedText) {
                             if (!comment) return
                             console.log("Found redditELI5 answer", comment)
 
-                            const {author_fullname, body, body_html, permalink} = comment;
+                            const {author, body, body_html, permalink} = comment;
 
                             let resultItem = questionAndAnswerTemplate.content.cloneNode(true);
                             const newContent = document.createTextNode(title);
@@ -106,7 +106,7 @@ function generateQueryDisplay(selectedText) {
 
 
                             resultItem.querySelector(".answer").innerHTML = decoded_html;
-                            const source = document.createTextNode(`${author_fullname} on redditELI5`);
+                            const source = document.createTextNode(`${author} on redditELI5`);
                             resultItem.querySelector(".source a").href = "https://www.reddit.com/" + permalink;
                             resultItem.querySelector(".source a").appendChild(source)
                             resultWrapper.appendChild(resultItem);
@@ -149,6 +149,16 @@ function generateQueryDisplay(selectedText) {
         console.error(err)
 
     }
+}
+
+function minimizeGoose(speechBubble, goose) {
+    speechBubble.style.visibility = 'hidden';
+    speechBubble.style.opacity = '0';
+
+
+    goose.style.transform = 'None';
+    goose.style.height = '80px';
+    goose.style.bottom = '-8px';
 }
 
 // Wrap pop-up related event here!!
@@ -211,18 +221,11 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
     goose.addEventListener('click', () => {
-        console.log(speechBubble.style.visibility)
         const audio = new Audio('goose.mp3');
         audio.volume = 0.1;
         audio.play();
         if (speechBubble.style.visibility === 'visible') {
-            speechBubble.style.visibility = 'hidden';
-            speechBubble.style.opacity = '0';
-
-
-            goose.style.transform = 'None';
-            goose.style.height = '80px';
-            goose.style.bottom = '-8px';
+            minimizeGoose(speechBubble, goose);
         } else {
             speechBubble.style.visibility = 'visible';
             speechBubble.style.opacity = '1';
