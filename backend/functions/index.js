@@ -144,7 +144,7 @@ const searchWiki = async (max, limit) => {
 const extractWikiSummary = async (title) => {
     // hard coded to get 3 sentences max; redirection allowed - might got the wrong summary?
     // title = title.replaceAll(' ', '_');
-    return fetch(encodeURI(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}&exsentences=3`)).then((res) => {
+    return fetch(encodeURI(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}&exsentences=2`)).then((res) => {
         return res.json()
     })
         .then((data) => {
