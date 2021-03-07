@@ -45,21 +45,82 @@ function generateQueryDisplay(selectedText) {
                 console.log(data)
                 const {redditELI5, redditExplained, stackOverFlow, wiki} = data;
 
-                function add(result, source) {
+                function add(result, link, sourceName) {
                     let resultItem = resultItemTemplate.content.cloneNode(true);
                     resultItem.querySelector(".resultContent").innerHTML = result;
+                    resultItem.querySelector(".source a").href = link;
+                    const source = document.createTextNode(`${sourceName} on redditELI5`);
+                    resultItem.querySelector(".source a").appendChild(source)
                     resultWrapper.appendChild(resultItem)
                 }
 
-                redditELI5 && redditELI5[0] && redditELI5[0][0] && add(redditELI5[0][0].title + " #" + redditELI5[0][0].subreddit, redditELI5[0][0].url);
-                redditExplained[0][0] && add(redditExplained[0][0].title + " #" + redditExplained[0][0].subreddit, redditExplained[0][0].url);
 
-                // stackoverflow
-                // const newDiv = document.createElement("div");
+                if (redditExplained && redditExplained[0] && redditExplained[0][0]) {
+                    console.log("Found redditExplained result", redditExplained[0][0]);
+                    const {subreddit, title, comments_url} = redditExplained[0][0];
 
+                    fetch(comments_url)
+                        .then(res => res.json())
+                        .then(data => {
+                            let comment = data[1]?.data?.children[0]?.data;
+                            if (!comment) return
+                            console.log("Found redditExplained answer", comment)
+
+                            const {author_fullname, body, body_html, permalink} = comment;
+
+                            let resultItem = questionAndAnswerTemplate.content.cloneNode(true);
+                            const newContent = document.createTextNode(title);
+                            resultItem.querySelector(".question").appendChild(newContent);
+
+
+                            var txt = document.createElement("textarea");
+                            txt.innerHTML = body_html;
+                            decoded_html = txt.value;
+
+
+                            resultItem.querySelector(".answer").innerHTML = decoded_html;
+                            const source = document.createTextNode(`${author_fullname} on redditExplained`);
+                            resultItem.querySelector(".source a").href = "https://www.reddit.com/" + permalink;
+                            resultItem.querySelector(".source a").appendChild(source)
+                            resultWrapper.appendChild(resultItem);
+
+                        });
+                }
+
+                if (redditELI5 && redditELI5[0] && redditELI5[0][0]) {
+                    console.log("Found redditELI5 result", redditELI5[0][0]);
+                    const {subreddit, title, comments_url} = redditELI5[0][0];
+
+                    fetch(comments_url)
+                        .then(res => res.json())
+                        .then(data => {
+                            let comment = data[1]?.data?.children[0]?.data;
+                            if (!comment) return
+                            console.log("Found redditELI5 answer", comment)
+
+                            const {author_fullname, body, body_html, permalink} = comment;
+
+                            let resultItem = questionAndAnswerTemplate.content.cloneNode(true);
+                            const newContent = document.createTextNode(title);
+                            resultItem.querySelector(".question").appendChild(newContent);
+
+
+                            var txt = document.createElement("textarea");
+                            txt.innerHTML = body_html;
+                            decoded_html = txt.value;
+
+
+                            resultItem.querySelector(".answer").innerHTML = decoded_html;
+                            const source = document.createTextNode(`${author_fullname} on redditELI5`);
+                            resultItem.querySelector(".source a").href = "https://www.reddit.com/" + permalink;
+                            resultItem.querySelector(".source a").appendChild(source)
+                            resultWrapper.appendChild(resultItem);
+
+                        });
+                }
 
                 if (stackOverFlow[0][0]) {
-                    console.log("Found stackoverflow result", stackOverFlow[0][0])
+                    console.log("Found stackoverflow result", stackOverFlow[0][0]);
                     const {title, accepted_answer_id} = stackOverFlow[0][0];
 
                     fetch(`https://api.stackexchange.com/2.2/answers/${accepted_answer_id}?order=desc&sort=activity&site=stackoverflow&filter=!*JxbirhO10oHzPUa`)
@@ -86,7 +147,8 @@ function generateQueryDisplay(selectedText) {
                         });
 
                 }
-                wiki[0][0] && add(wiki[0][0].text, wiki.url);
+
+                wiki[0][0] && add(wiki[0][0].text, wiki.url, "Wikipedia");
             });
     } catch (err) {
         console.error(err)
