@@ -13,23 +13,35 @@ const findEntitiesHandler = async (request, response) => {
   const [result] = await client.analyzeEntities({document});
 
   const entities = result.entities;
-
-  functions.logger.info("entities", entities);
-
-  const max = entities.reduce(function(prev, current) {
-    return (prev.salience > current.salience) ? prev : current;
+  const redditList = entities.filter((entity) => {
+    return entity.salience > 0.1;
   });
 
-  const res = {
-    reddit: await searchReddit(max, request.query.sortBy, request.query.limit),
-    stackOverFlow: await searchStack(max),
+  const sortBy = request.query.sortBy;
+  // const limit = request.query.limit;
+
+  const redditELI5 = async () => {
+    return Promise.all(redditList.map(async (entity) => {
+      return searchReddit(entity, "ELI5", sortBy, 2);
+    }));
   };
-  // searchStackOverFlow(max);
+
+  const redditExplained = async () => {
+    return Promise.all(redditList.map(async (entity) => {
+      return searchReddit(entity, "explained", sortBy, 2);
+    }));
+  };
+
+  const res = {
+    redditELI5: await redditELI5(),
+    redditExplained: await redditExplained(),
+    stackOverFlow: await searchStack(max, limit),
+  };
   response.send(200, res);
 };
 
-const searchReddit = async (max, sortBy, limit) => {
-  return fetch(`http://www.reddit.com/search.json?q=${max.name} ELI5&sort=${sortBy}&limit=${limit}`)
+const searchReddit = async (entity, type, sortBy, limit) => {
+  return fetch(`http://www.reddit.com/search.json?q=${entity.name} ${type}&sort=${sortBy}&limit=${limit}`)
       .then((res) => res.json())
       .then((data) => {
         // data grooming
@@ -40,7 +52,7 @@ const searchReddit = async (max, sortBy, limit) => {
             ups: currPost["ups"],
             downs: currPost["downs"],
             subreddit: currPost["subreddit_name_prefixed"],
-            text: currPost["selftext"],
+            text: currPost["selftext"].replace("\n", ""),
             url: currPost["url"],
           };
         }
@@ -48,24 +60,25 @@ const searchReddit = async (max, sortBy, limit) => {
       });
 };
 
-const searchStack = async (max) => {
-  return fetch(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
-      .then((res) => res.json())
-      .then((data) => {
-        for (let i = 0; i < data.items.length; ++i) {
-          const currPost = data.items[i];
-            data.items[i] = {
-              title: currPost["title"],
-              score: currPost["score"],
-              answerCount: currPost["answer_count"],
-              text: currPost["body"].replace(/(<([^>]+)>)/gi, ""),
-              url: currPost["link"]
-            }
-    
-        }
-          return data.items.slice(0,5);
-      });
-};
+ const searchStack = async (max, limit) => {
+   return fetch(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
+       .then((res) => res.json())
+       .then((data) => {
+         for (let i = 0; i < data.items.length; ++i) {
+           const currPost = data.items[i];
+           data.items[i] = {
+             title: currPost["title"],
+             score: currPost["score"],
+             answerCount: currPost["answer_count"],
+             text: currPost["body"]
+                 .replace(/(<([^>]+)>)/gi, "")
+                 .replace("\n", ""),
+             url: currPost["link"],
+           };
+         }
+         return data.items.slice(0, limit);
+       });
+   };
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
