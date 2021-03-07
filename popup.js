@@ -30,30 +30,37 @@ function generateQueryDisplay(selectedText) {
 
     const resultItemTemplate = document.querySelector("#resultItem");
 
-    fetch("https://us-central1-eli5-chrome-extension.cloudfunctions.net/findEntities", {
-        method: "POST",
-        body: JSON.stringify({"text": selectedText}),
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log(data)
-            const {redditELI5, redditExplained, stackOverFlow, wiki} = data;
-            console.log(redditELI5[0].title)
-            function add(result, source) {
-                console.log(result)
-                let resultItem = resultItemTemplate.content.cloneNode(true);
-                resultItem.querySelector(".resultContent").innerText = result;
-                resultWrapper.appendChild(resultItem)
-            }
-
-            redditELI5[0][0] && add(redditELI5[0][0].title + " #" + redditELI5[0][0].subreddit, redditELI5[0][0].url);
-            redditExplained[0][0] && add(redditExplained[0][0].title + " #" + redditExplained[0][0].subreddit, redditExplained[0][0].url);
-            wiki[0][0] && add(wiki[0][0].text, wiki.url);
+    try {
+        fetch("https://us-central1-eli5-chrome-extension.cloudfunctions.net/findEntities", {
+            method: "POST",
+            body: JSON.stringify({"text": selectedText}),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
         })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data)
+                const {redditELI5, redditExplained, stackOverFlow, wiki} = data;
+                console.log(redditELI5[0].title)
+
+                function add(result, source) {
+                    console.log(result)
+                    let resultItem = resultItemTemplate.content.cloneNode(true);
+                    resultItem.querySelector(".resultContent").innerText = result;
+                    resultWrapper.appendChild(resultItem)
+                }
+
+                redditELI5[0][0] && add(redditELI5[0][0].title + " #" + redditELI5[0][0].subreddit, redditELI5[0][0].url);
+                redditExplained[0][0] && add(redditExplained[0][0].title + " #" + redditExplained[0][0].subreddit, redditExplained[0][0].url);
+                stackOverFlow[0][0] && add(stackOverFlow[0][0].title + ": " + stackOverFlow[0][0].text, stackOverFlow[0][0].url);
+                wiki[0][0] && add(wiki[0][0].text, wiki.url);
+            });
+    } catch (err) {
+        console.error(err)
+
+    }
 }
 
 // Wrap pop-up related event here!!
