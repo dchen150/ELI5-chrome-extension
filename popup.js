@@ -1,9 +1,4 @@
 const GitHubLink = "https://github.com/dchen150/ELI5-chrome-extension";
-const DerekChen = "https://derekchen.dev/"
-const FloraChen = "https://github.com/flora-yc/"
-const JiajiaKong = "https://www.jiajiakong.ca/"
-const TrumanHung = "http://trumanhung.tech/"
-
 
 /* The function that finds and returns the selected text */
 const getSelectedText = function () {
@@ -45,11 +40,11 @@ function generateQueryDisplay(selectedText) {
                 console.log(data)
                 const {redditELI5, redditExplained, stackOverFlow, wiki} = data;
 
-                function add(result, link, sourceName) {
+                function add(result, link) {
                     let resultItem = resultItemTemplate.content.cloneNode(true);
                     resultItem.querySelector(".resultContent").innerHTML = result;
                     resultItem.querySelector(".source a").href = link;
-                    const source = document.createTextNode(`${sourceName} on redditELI5`);
+                    const source = document.createTextNode(`Wikipedia`);
                     resultItem.querySelector(".source a").appendChild(source)
                     resultWrapper.appendChild(resultItem)
                 }
@@ -148,7 +143,7 @@ function generateQueryDisplay(selectedText) {
 
                 }
 
-                wiki[0][0] && add(wiki[0][0].text, wiki.url, "Wikipedia");
+                wiki[0][0] && add(wiki[0][0].text, wiki[0][0].url);
             });
     } catch (err) {
         console.error(err)
@@ -165,10 +160,6 @@ window.addEventListener('DOMContentLoaded', function () {
     const response = document.querySelector('#response');
     const clearBtn = document.querySelector('.close-icon');
     const resultWrapper = document.querySelector(".resultWrapper");
-    const derek = document.querySelector("#derek");
-    const flora = document.querySelector("#flora");
-    const jiajia = document.querySelector("#jiajia");
-    const truman = document.querySelector("#truman");
     const goose = document.querySelector("#gooseHelper");
     const speechBubble = document.querySelector(".speech-bubble");
 
@@ -180,10 +171,6 @@ window.addEventListener('DOMContentLoaded', function () {
     // Create links
     caption.addEventListener('click', () => chrome.tabs.create({url: GitHubLink}));
     settings.addEventListener('click', () => chrome.tabs.create({'url': 'chrome://extensions/?options=' + chrome.runtime.id}));
-    derek.addEventListener('click', () => chrome.tabs.create({url: DerekChen}));
-    flora.addEventListener('click', () => chrome.tabs.create({url: FloraChen}));
-    jiajia.addEventListener('click', () => chrome.tabs.create({url: JiajiaKong}));
-    truman.addEventListener('click', () => chrome.tabs.create({url: TrumanHung}));
 
     // You search for...
     chrome.storage.sync.get(['selectedText'], function (result) {
