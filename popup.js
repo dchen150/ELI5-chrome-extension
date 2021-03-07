@@ -34,6 +34,9 @@ function generateQueryDisplay(selectedText) {
     const resultItemTemplate = document.querySelector("#resultItem");
     const questionAndAnswerTemplate = document.querySelector("#questionAndAnswer");
 
+    const loading = document.querySelector(".loadingContainer");
+    loading.style.display = "block";
+
     try {
         fetch("https://us-central1-eli5-chrome-extension.cloudfunctions.net/findEntities", {
             method: "POST",
@@ -148,9 +151,13 @@ function generateQueryDisplay(selectedText) {
                 }
 
                 wiki && wiki[0] && wiki[0][0] && add(wiki[0][0].text, wiki[0][0].url);
+
+                loading.style.display = "none";
             });
     } catch (err) {
         console.error(err)
+
+        loading.style.display = "none";
 
     }
 }
