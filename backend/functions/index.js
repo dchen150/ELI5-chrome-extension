@@ -54,16 +54,15 @@ const searchStack = async (max) => {
       .then((data) => {
         for (let i = 0; i < data.items.length; ++i) {
           const currPost = data.items[i];
-            data.items[i] = {
-              title: currPost["title"],
-              score: currPost["score"],
-              answerCount: currPost["answer_count"],
-              text: currPost["body"],
-              url: currPost["link"]
-            }
-    
+          data.items[i] = {
+            title: currPost["title"],
+            score: currPost["score"],
+            answerCount: currPost["answer_count"],
+            text: currPost["body"],
+            url: currPost["link"],
+          };
         }
-          return data.items.slice(0,5);
+        return data.items.slice(0, 5);
       });
 };
 
