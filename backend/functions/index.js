@@ -32,19 +32,25 @@ const findEntitiesHandler = async (request, response) => {
         }));
     };
 
-    const wiki = async () => {
-        return Promise.all(redditList.map(async (entity) => {
-            return searchWiki(entity, 2);
-        }));
-    };
+  const stack = async () => {
+    return Promise.all(redditList.map(async (entity) => {
+      return searchStack(entity, 2);
+    }));
+  };
 
-    const res = {
-        redditELI5: await redditELI5(),
-        redditExplained: await redditExplained(),
-        // stackOverFlow: await searchStack(max, limit),
-        wiki: await wiki()
-    };
-    response.send(200, res);
+  const wiki = async () => {
+    return Promise.all(redditList.map(async (entity) => {
+      return searchWiki(entity, 2);
+    }));
+  };
+
+  const res = {
+    redditELI5: await redditELI5(),
+    redditExplained: await redditExplained(),
+    stackOverFlow: await stack(),
+    wiki: await wiki()
+  };
+  response.send(200, res);
 };
 
 const searchReddit = async (entity, type, sortBy, limit) => {
@@ -67,25 +73,25 @@ const searchReddit = async (entity, type, sortBy, limit) => {
         });
 };
 
-// const searchStack = async (max, limit) => {
-//   return fetch(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
-//       .then((res) => res.json())
-//       .then((data) => {
-//         for (let i = 0; i < data.items.length; ++i) {
-//           const currPost = data.items[i];
-//           data.items[i] = {
-//             title: currPost["title"],
-//             score: currPost["score"],
-//             answerCount: currPost["answer_count"],
-//             text: currPost["body"]
-//                 .replace(/(<([^>]+)>)/gi, "")
-//                 .replace("\n", ""),
-//             url: currPost["link"],
-//           };
-//         }
-//         return data.items.slice(0, limit);
-//       });
-// };
+ const searchStack = async (max, limit) => {
+   return fetch(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`)
+       .then((res) => res.json())
+       .then((data) => {
+         for (let i = 0; i < data.items.length; ++i) {
+           const currPost = data.items[i];
+           data.items[i] = {
+             title: currPost["title"],
+             score: currPost["score"],
+             answerCount: currPost["answer_count"],
+             text: currPost["body"]
+                 .replace(/(<([^>]+)>)/gi, "")
+                 .replace("\n", ""),
+             url: currPost["link"],
+           };
+         }
+         return data.items.slice(0, limit);
+       });
+   };
 
 const searchWiki = async (max, limit) => {
     return fetch(`https://en.wikipedia.org/w/api.php?format=json&action=query&list=search&srsearch=${max.name}&srlimit=${limit}&srenablerewrites&srprop=snippet|sectionsnippet|titlesnippet`)
