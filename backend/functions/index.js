@@ -60,12 +60,16 @@ const searchReddit = async (entity, type, sortBy, limit) => {
             // data grooming
             for (let i = 0; i < data.data.children.length; ++i) {
                 const currPost = data.data.children[i].data;
+                let text = currPost["selftext"].replace("\n", "");
+                const sentenceArr = text.split('. ')
+                text = sentenceArr.slice(0, 10).join('. ') + '.'
+
                 data.data.children[i] = {
                     title: currPost["title"],
                     ups: currPost["ups"],
                     downs: currPost["downs"],
                     subreddit: currPost["subreddit_name_prefixed"],
-                    text: currPost["selftext"].replace("\n", ""),
+                    text,
                     url: currPost["url"],
                     subreddit_id: currPost["subreddit_id"],
                     comments_url: `https://www.reddit.com/${currPost["subreddit_name_prefixed"]}/comments/${currPost["id"]}/.json`,
