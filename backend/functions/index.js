@@ -67,6 +67,8 @@ const searchReddit = async (entity, type, sortBy, limit) => {
                     subreddit: currPost["subreddit_name_prefixed"],
                     text: currPost["selftext"].replace("\n", ""),
                     url: currPost["url"],
+                    subreddit_id: currPost["subreddit_id"],
+                    comments_url: `https://www.reddit.com/${currPost["subreddit_name_prefixed"]}/comments/${currPost["id"]}/.json`,
                 };
             }
             return data.data.children;
