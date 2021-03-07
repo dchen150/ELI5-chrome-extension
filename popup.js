@@ -114,7 +114,7 @@ function generateQueryDisplay(selectedText) {
                         });
                 }
 
-                if (stackOverFlow[0][0]) {
+                if (stackOverFlow && stackOverFlow[0] && stackOverFlow[0][0]) {
                     console.log("Found stackoverflow result", stackOverFlow[0][0]);
                     const {title, accepted_answer_id} = stackOverFlow[0][0];
 
