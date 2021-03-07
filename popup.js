@@ -1,4 +1,9 @@
 const GitHubLink = "https://github.com/dchen150/ELI5-chrome-extension";
+const DerekChen = "https://derekchen.dev/"
+const FloraChen = "https://github.com/flora-yc/"
+const JiajiaKong = "https://www.jiajiakong.ca/"
+const TrumanHung = "http://trumanhung.tech/"
+
 
 /* The function that finds and returns the selected text */
 const getSelectedText = function () {
@@ -40,18 +45,23 @@ window.addEventListener('DOMContentLoaded', function () {
     const response = document.querySelector('#response');
     const clearBtn = document.querySelector('.close-icon');
     const resultWrapper = document.querySelector(".resultWrapper");
+    const derek = document.querySelector("#derek");
+    const flora = document.querySelector("#flora");
+    const jiajia = document.querySelector("#jiajia");
+    const truman = document.querySelector("#truman");
 
     // Select text
     chrome.tabs.executeScript({
         code: jsCodeWrapper(getSelectedText)
     });
 
-    // Header caption
+    // Create links
     caption.addEventListener('click', () => chrome.tabs.create({url: GitHubLink}));
-
-    // Header settings logo
-
     settings.addEventListener('click', () => chrome.tabs.create({'url': 'chrome://extensions/?options=' + chrome.runtime.id}));
+    derek.addEventListener('click', () => chrome.tabs.create({url: DerekChen}));
+    flora.addEventListener('click', () => chrome.tabs.create({url: FloraChen}));
+    jiajia.addEventListener('click', () => chrome.tabs.create({url: JiajiaKong}));
+    truman.addEventListener('click', () => chrome.tabs.create({url: TrumanHung}));
 
     // You search for...
     chrome.storage.sync.get(['selectedText'], function (result) {

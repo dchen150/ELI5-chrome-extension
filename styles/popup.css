@@ -49,8 +49,14 @@ body {
 }
 
 /*content wrapper*/
-.resultWrapper, .searchWrapper {
+.wrapper {
   padding: 5px 8px;
+}
+
+.searchWrapper {
+  position: relative;
+  /*overflow: hidden;*/
+  height: 120px;
 }
 
 /*search bar and search button*/
@@ -58,8 +64,8 @@ body {
   transform: rotate(5.96deg);
   width: 60%;
   position: absolute;
-  bottom: 55px;
-  left: 110px;
+  top: 10px;
+  left: 120px;
   z-index: 100;
   background: white;
   padding: 0 5px;
@@ -68,7 +74,7 @@ body {
   min-height: 30px;
 
   /*chat bubble*/
-  border: 5px groove #000;
+  border: 3px groove #000;
   border-radius: 30px;
   -webkit-border-radius: 30px;
   -moz-border-radius: 30px;
@@ -80,11 +86,11 @@ body {
   position: absolute;
   width: 0;
   height: 0;
-  left: 33px;
+  left: 35px;
   right: auto;
   top: auto;
-  bottom: -33px;
-  border: 16px groove;
+  bottom: -28px;
+  border: 13px groove;
   border-color: #000 transparent transparent #000;
 }
 
@@ -155,10 +161,12 @@ body {
 
 /*goose*/
 #gooseHelper {
-  width: 73.5px;
-  height: 90px;
-  transform: rotate(-10.09deg);
-  padding-left: 20px
+  /*width: 73.5px;*/
+  height: 160px;
+  transform: rotate(-13deg);
+  position: fixed;
+  bottom: -13px;
+  left: -10px;
 }
 
 #queryWrapper {
@@ -236,4 +244,17 @@ body {
   font-size: 12px;
   box-shadow: 0 0 2px #E50F0F;
   cursor: pointer;
+}
+
+.authorWrapper {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  color: #666;
+  font-size: 10.5px;
+}
+
+#heart {
+  color: #e25555;
+  /*color: #EEAE23;*/
 }
