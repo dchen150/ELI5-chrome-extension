@@ -40,7 +40,7 @@ const findEntitiesHandler = async (request, response) => {
 
     const wiki = async () => {
         return Promise.all(redditList.map(async (entity) => {
-            return searchWiki(entity, 2);
+            return searchWiki(entity, 3);
         }));
     };
 
@@ -113,8 +113,6 @@ const searchWiki = async (max, limit) => {
                     type: "default"
                 };
 
-                console.log(1, objBuilder)
-
                 // get the Section summary instead
                 if (result.hasOwnProperty("sectionsnippet")) {
                     console.log(2, objBuilder);
@@ -124,20 +122,16 @@ const searchWiki = async (max, limit) => {
                     objBuilder.text = await extractWikiSection(title, sectionName, 3);
                     objBuilder.type = "section"
                 }
-
                 // get the Wiki summary instead
                 else if (result.hasOwnProperty("titlesnippet")) {
-                    const test = await extractWikiSummary(title);
-                    console.log(3, test);
-                    objBuilder.text = test;
-                    console.log(2, objBuilder);
+                    objBuilder.text = await extractWikiSummary(title);
                     objBuilder.type = "summary"
                 }
-
-                console.log(objBuilder)
-
-                return objBuilder
-            }));
+                    return objBuilder
+                }).filter(async result => {
+                    return result.text && result.text.length > 50
+                })
+            );
 
         });
 };
@@ -184,7 +178,7 @@ const extractWikiSection = async (title, sectionName, maxLength) => {
 // });
 
 const searchWikiHandler = async (request, response) => {
-    response.send(200, await searchWiki({name: request.body.text}, 2));
+    response.send(200, await searchWiki({name: request.body.text}, 3));
 }
 
 const extractWikiSummaryHandler = async (request, response) => {
