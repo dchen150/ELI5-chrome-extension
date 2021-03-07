@@ -6,11 +6,12 @@
 
 body {
   background: #FFFCF9;
-  width: max-content;
+  /*width: max-content;*/
   height: max-content;
   margin: 0;
   min-width: 400px;
   min-height: 300px;
+  width:750px;
 
   /* Fixed max https://stackoverflow.com/a/8983678 */
   max-width: 750px;
