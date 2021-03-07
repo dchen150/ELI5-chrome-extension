@@ -10,6 +10,14 @@ const getSelectedText = function () {
 
 };
 
+const trimSpaces = extract => extract.replace(/\s\s+/g, ' ').slice(0, -1);
+
+const trimSentences = (extract, maxSentences = 3) => {
+    const preTrim = trimSpaces(extract).match(/[^\.!\?]+[\.!\?]+\s+/g);
+    const postTrim = preTrim.slice(0, maxSentences)
+    return trimSpaces(postTrim.join(" ")) + (preTrim.length !== postTrim.length ? "..." : "");
+}
+
 /* This line converts the above function to string
  * (and makes sure it will be called instantly) */
 const jsCodeWrapper = callbackFunc => ';(' + callbackFunc + ')();';
@@ -68,12 +76,11 @@ function generateQueryDisplay(selectedText) {
                             resultItem.querySelector(".question").appendChild(newContent);
 
 
-                            var txt = document.createElement("textarea");
-                            txt.innerHTML = body_html;
-                            decoded_html = txt.value;
-
-
-                            resultItem.querySelector(".answer").innerHTML = decoded_html;
+                            // var txt = document.createElement("textarea");
+                            // txt.innerHTML = body_html;
+                            // decoded_html = txt.value;
+                            const answer = document.createTextNode(trimSentences(body, 3));
+                            resultItem.querySelector(".answer").appendChild(answer);
                             const source = document.createTextNode(`${author} on redditExplained`);
                             resultItem.querySelector(".source a").href = "https://www.reddit.com/" + permalink;
                             resultItem.querySelector(".source a").appendChild(source)
@@ -99,13 +106,12 @@ function generateQueryDisplay(selectedText) {
                             const newContent = document.createTextNode(title);
                             resultItem.querySelector(".question").appendChild(newContent);
 
+                            // var txt = document.createElement("textarea");
+                            // txt.innerHTML = body_html;
+                            // decoded_html = txt.value;
 
-                            var txt = document.createElement("textarea");
-                            txt.innerHTML = body_html;
-                            decoded_html = txt.value;
-
-
-                            resultItem.querySelector(".answer").innerHTML = decoded_html;
+                            const answer = document.createTextNode(trimSentences(body, 3));
+                            resultItem.querySelector(".answer").appendChild(answer);
                             const source = document.createTextNode(`${author} on redditELI5`);
                             resultItem.querySelector(".source a").href = "https://www.reddit.com/" + permalink;
                             resultItem.querySelector(".source a").appendChild(source)
@@ -128,8 +134,6 @@ function generateQueryDisplay(selectedText) {
 
                             const stackTemplate = `<strong>Question: </strong>${title}<br/><strong>Answer: </strong> ${stackOverFlow[0][0].text}`
 
-                            console.log(title)
-
                             let resultItem = questionAndAnswerTemplate.content.cloneNode(true);
                             const newContent = document.createTextNode(title);
                             resultItem.querySelector(".question").appendChild(newContent);
@@ -143,7 +147,7 @@ function generateQueryDisplay(selectedText) {
 
                 }
 
-                wiki[0][0] && add(wiki[0][0].text, wiki[0][0].url);
+                wiki && wiki[0] && wiki[0][0] && add(wiki[0][0].text, wiki[0][0].url);
             });
     } catch (err) {
         console.error(err)
