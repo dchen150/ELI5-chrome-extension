@@ -74,23 +74,25 @@ const searchReddit = async (entity, type, sortBy, limit) => {
 };
 
 const searchStack = async (max, limit) => {
-    return fetch(encodeURI(`https://api.stackexchange.com/2.2/search?order=desc&sort=votes&intitle=${max.name}&site=stackoverflow&key=mIk*8hZ*JrcKmhTii4eyjg((&access_token=aby1oFvv*YWo56Kt3B4cGA))&filter=withbody`))
+    return fetch(encodeURI(`https://api.stackexchange.com/2.2/search/advanced?pagesize=${limit}&order=desc&sort=votes&accepted=True&answers=1&body=${max.name}&site=stackoverflow`))
         .then((res) => res.json())
         .then((data) => {
-            for (let i = 0; i < data.items.length; ++i) {
-                const currPost = data.items[i];
-                data.items[i] = {
-                    title: currPost["title"],
-                    score: currPost["score"],
-                    answerCount: currPost["answer_count"],
-                    text: currPost["body"]
-                        .replace(/(<([^>]+)>)/gi, "")
-                        .replace("\n", ""),
-                    url: currPost["link"],
-                };
+                return data.items
+                // for (let i = 0; i < data.items.length; ++i) {
+                //     const currPost = data.items[i];
+                //     data.items[i] = {
+                //         title: currPost["title"],
+                //         score: currPost["score"],
+                //         answerCount: currPost["answer_count"],
+                //         text: currPost["body"]
+                //             .replace(/(<([^>]+)>)/gi, "")
+                //             .replace("\n", ""),
+                //         url: currPost["link"],
+                //     };
+                // }
+                // return data.items.slice(0, limit);
             }
-            return data.items.slice(0, limit);
-        });
+        );
 };
 
 const searchWiki = async (max, limit) => {
@@ -178,7 +180,7 @@ const extractWikiSection = async (title, sectionName, maxLength) => {
 // });
 
 const searchWikiHandler = async (request, response) => {
-    response.send(200, await searchWiki({name: request.body.text}, 3));
+    response.send(200, await searchStack({name: request.body.text}, 3));
 }
 
 const extractWikiSummaryHandler = async (request, response) => {

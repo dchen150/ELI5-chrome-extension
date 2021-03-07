@@ -29,6 +29,7 @@ function generateQueryDisplay(selectedText) {
     resultWrapper.appendChild(queryDisplay);
 
     const resultItemTemplate = document.querySelector("#resultItem");
+    const questionAndAnswerTemplate = document.querySelector("#questionAndAnswer");
 
     try {
         fetch("https://us-central1-eli5-chrome-extension.cloudfunctions.net/findEntities", {
@@ -50,21 +51,40 @@ function generateQueryDisplay(selectedText) {
                     resultWrapper.appendChild(resultItem)
                 }
 
-                redditELI5[0][0] && add(redditELI5[0][0].title + " #" + redditELI5[0][0].subreddit, redditELI5[0][0].url);
+                redditELI5 && redditELI5[0] && redditELI5[0][0] && add(redditELI5[0][0].title + " #" + redditELI5[0][0].subreddit, redditELI5[0][0].url);
                 redditExplained[0][0] && add(redditExplained[0][0].title + " #" + redditExplained[0][0].subreddit, redditExplained[0][0].url);
 
                 // stackoverflow
                 // const newDiv = document.createElement("div");
 
 
-                // stackOverFlow[0][0] && add(stackOverFlow[0][0].title + ": " + stackOverFlow[0][0].text, stackOverFlow[0][0].url);
-
                 if (stackOverFlow[0][0]) {
-                    const stackTemplate = `<strong>Question: </strong> ${stackOverFlow[0][0].title}<br/><strong>Answer: </strong> ${stackOverFlow[0][0].text}`
+                    console.log("Found stackoverflow result", stackOverFlow[0][0])
+                    const {title, accepted_answer_id} = stackOverFlow[0][0];
 
-                    let resultItem = resultItemTemplate.content.cloneNode(true);
-                    resultItem.querySelector(".resultContent").innerHTML = stackTemplate;
-                    resultWrapper.appendChild(resultItem)
+                    fetch(`https://api.stackexchange.com/2.2/answers/${accepted_answer_id}?order=desc&sort=activity&site=stackoverflow&filter=!*JxbirhO10oHzPUa`)
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log("Found stackoverflow answer", data.items[0])
+                            const {answer_id, body, link} = data.items[0];
+                            // { "display_name": "jfriend00", "link": "https://stackoverflow.com/users/816620/jfriend00" }
+                            const answerPerson = data.items[0].owner;
+
+                            const stackTemplate = `<strong>Question: </strong>${title}<br/><strong>Answer: </strong> ${stackOverFlow[0][0].text}`
+
+                            console.log(title)
+
+                            let resultItem = questionAndAnswerTemplate.content.cloneNode(true);
+                            const newContent = document.createTextNode(title);
+                            resultItem.querySelector(".question").appendChild(newContent);
+                            resultItem.querySelector(".answer").innerHTML = body;
+                            const source = document.createTextNode(`${answerPerson.display_name} on Stackoverflow`);
+                            resultItem.querySelector(".source a").href = link;
+                            resultItem.querySelector(".source a").appendChild(source)
+                            resultWrapper.appendChild(resultItem);
+
+                        });
+
                 }
                 wiki[0][0] && add(wiki[0][0].text, wiki.url);
             });
