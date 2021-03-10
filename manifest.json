@@ -9,6 +9,7 @@
     "persistent": false
   },
   "permissions": [
+    "https://us-central1-eli5-chrome-extension.cloudfunctions.net/*",
     "activeTab"
   ],
   "options_ui": {
