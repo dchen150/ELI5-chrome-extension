@@ -255,7 +255,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         goose.addEventListener('click', () => {
             const audio = new Audio('goose.mp3');
-            audio.volume = 0.1;
+            audio.volume = 0.2;
             audio.play();
             if (speechBubble.style.visibility === 'visible') {
                 minimizeGoose(speechBubble, goose);
