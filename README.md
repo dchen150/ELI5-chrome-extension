@@ -1,7 +1,7 @@
 # Mr Goose
 
 [GitHub](https://github.com/dchen150/ELI5-chrome-extension) | [DevPost](https://devpost.com/software/mr-goose-qhe1vk)
-| [Chrome Web Store](https://chrome.google.com/webstore/detail/lllhhbkickamfocedfcnnlldgjadplag/preview)
+| [Chrome Web Store](https://chrome.google.com/webstore/detail/mr-goose/jembldacfdenbcnihkhmkdlamobbobip/)
 | [Slides](https://docs.google.com/presentation/d/e/2PACX-1vRYP9-rKlKq7qXTpRQJT_-1BYjMqewfx112m3Hu5yZ-xDDHRddGtt-2KTFYDifWGe7CgmHx0kHDqERU/pub?start=true&loop=false&delayms=3000)
 
 [![Youtube: Mr Goose](logistics/0001.gif)](https://www.youtube.com/watch?v=-DDr-ZiCAsc "Everything Is AWESOME")
