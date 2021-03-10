@@ -6,16 +6,14 @@
 
 body {
   background: #FFFCF9;
-  /*width: max-content;*/
-  height: max-content;
   margin: 0;
+  /*width: max-content;*/
+  /*width:750px;*/
+  height: max-content;
   min-width: 400px;
   min-height: 300px;
-  width:750px;
-
-  /* Fixed max https://stackoverflow.com/a/8983678 */
-  max-width: 750px;
-  max-height: 600px
+  max-height: 600px /* Fixed max https://stackoverflow.com/a/8983678 */
+  /*max-width: 750px;*/
 }
 
 /*header*/
@@ -316,7 +314,6 @@ body {
 
 .goose-loading {
   width: 100px;
-
   padding-bottom: 10px;
 
 }
