@@ -33,6 +33,7 @@ function generateQueryDisplay(selectedText) {
     resultWrapper.appendChild(queryDisplay);
     const resultItemTemplate = document.querySelector("#resultItem");
     const questionAndAnswerTemplate = document.querySelector("#questionAndAnswer");
+    const factCheck = document.querySelector("#factCheck");
 
     const loading = document.querySelector(".loadingContainer");
     loading.style.display = "block";
@@ -51,7 +52,37 @@ function generateQueryDisplay(selectedText) {
             .then((res) => res.json())
             .then((data) => {
                 console.log(data)
-                const {redditELI5, redditExplained, stackOverFlow, wiki} = data;
+                const {googleFactCheck, redditELI5, redditExplained, stackOverFlow, wiki} = data;
+
+                if (googleFactCheck && googleFactCheck.claims) {
+                    googleFactCheck.claims.map(claim => {
+                        console.log("Found fact check", claim);
+                        const {text, claimant, claimReview} = claim;
+                        const link = claimReview[0].url
+                        let rating = claimReview[0]['textualRating']
+
+                        if (rating.toUpperCase().includes('TRUE')) {
+                            rating += ' ✔️';
+                        } else if (rating.toUpperCase().includes('FALSE') || rating.toUpperCase().includes('ALTER')) {
+                            rating += ' ❌';
+                        } else if (rating.toUpperCase().includes('SELECTIVE')) {
+                            rating += ' 🤔';
+                        }
+
+
+                        let resultItem = factCheck.content.cloneNode(true);
+                        const newContent = document.createTextNode(text);
+                        resultItem.querySelector(".question").appendChild(newContent);
+                        const newContent2 = document.createTextNode(rating);
+                        resultItem.querySelector(".answer").appendChild(newContent2)
+                        const source = document.createTextNode(`${claimant} on ${claimReview[0].publisher.site}`);
+                        resultItem.querySelector(".source a").href = link;
+                        resultItem.querySelector(".source a").appendChild(source)
+                        resultWrapper.appendChild(resultItem);
+
+                    });
+                }
+
 
                 function add(result, link) {
                     let resultItem = resultItemTemplate.content.cloneNode(true);

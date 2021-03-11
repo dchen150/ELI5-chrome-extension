@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const language = require("@google-cloud/language");
 const fetch = require("node-fetch");
 
+const apiKey = "AIzaSyCX_gp-8SH9JJPAVC_ayA8FVHfuJSDmBCo";
 
 const findEntitiesHandler = async (request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
@@ -56,11 +57,15 @@ const findEntitiesHandler = async (request, response) => {
         }));
     };
 
+    // search with the original text instead of NLP entity
+    const googleFactCheck = async () => await searchGoogleFactCheckHandler(request.body.text, 10);
+
     const res = {
         redditELI5: await redditELI5(),
         redditExplained: await redditExplained(),
         stackOverFlow: await stack(),
-        wiki: await wiki()
+        wiki: await wiki(),
+        googleFactCheck: await googleFactCheck()
     };
     response.send(200, res);
 };
@@ -213,6 +218,15 @@ const extractWikiSection = async (title, sectionName, maxSentenses) => {
     }
 }
 
+const searchGoogleFactCheckHandler = async (title, limit) => {
+    try {
+        console.log(title)
+        return await fetch(encodeURI(`https://factchecktools.googleapis.com/v1alpha1/claims:search?languageCode=en-US&pageSize=${limit}&query=${title}&key=${apiKey}`)).then((res) => res.json());
+    } catch (err) {
+        return "GoogleFactCheck"
+    }
+}
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -266,8 +280,24 @@ const extractWikiSectionHandler = async (request, response) => {
     response.send(200, await extractWikiSection(request.body.title, request.body.sectionName, 2));
 }
 
+const searchGoogleFactCheck = async (request, response) => {
+    response.set('Access-Control-Allow-Origin', '*');
+    response.set('Access-Control-Allow-Credentials', 'true'); // vital
+    if (request.method === 'OPTIONS') {
+        // Send response to OPTIONS requests
+        response.set('Access-Control-Allow-Methods', 'GET');
+        response.set('Access-Control-Allow-Headers', 'Content-Type');
+        response.set('Access-Control-Max-Age', '3600');
+        response.status(204).send('');
+        return
+    }
+
+    response.send(200, await searchGoogleFactCheckHandler(request.body.text, 3));
+}
+
 
 exports.findEntities = functions.https.onRequest(findEntitiesHandler);
 exports.searchWiki = functions.https.onRequest(searchWikiHandler);
 exports.extractWikiSummary = functions.https.onRequest(extractWikiSummaryHandler);
 exports.extractWikiSection = functions.https.onRequest(extractWikiSectionHandler);
+exports.searchGoogleFactCheck = functions.https.onRequest(searchGoogleFactCheck);
