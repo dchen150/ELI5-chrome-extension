@@ -63,7 +63,7 @@ function generateQueryDisplay(selectedText) {
 
                         if (rating.toUpperCase().includes('TRUE')) {
                             rating += ' ✔️';
-                        } else if (rating.toUpperCase().includes('FALSE') || rating.toUpperCase().includes('ALTER')) {
+                        } else if (rating.toUpperCase().includes('FALSE') || rating.toUpperCase().includes('ALTER') || rating.toUpperCase().includes('Misleading')) {
                             rating += ' ❌';
                         } else if (rating.toUpperCase().includes('SELECTIVE')) {
                             rating += ' 🤔';
